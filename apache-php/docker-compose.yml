@@ -1,0 +1,36 @@
+apache:
+    container_name: apache
+    build: .
+    environment:
+       - ALLOW_OVERRIDE=true
+    links:
+       - db:db
+       - maildev:maildev
+    ports:
+       - "80:80"
+    volumes:
+       - /web/apache:/var/www
+       - /conf/php.ini:/etc/php5/apache2/conf.d/30-custom.ini
+       - /conf/site:/etc/apache2/sites-enabled
+maildev:
+    container_name: maildev
+    image: djfarrelly/maildev
+    ports:
+       - "1080:80"
+       - "443:25"
+phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    ports:
+       - "1081:8080"
+    links:
+       - db:db
+    environment:
+        - mysql_db_server:db
+db:
+    container_name: mysql
+    image: mysql
+    volumes:
+        - /var/lib/boot2docker/mysql:/var/lib/mysql
+    environment:
+        - MYSQL_ROOT_PASSWORD=root
